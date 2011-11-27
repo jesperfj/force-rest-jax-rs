@@ -1,0 +1,3 @@
+[submodule "force-rest-api"]
+	path = force-rest-api
+	url = git@github.com:jesperfj/force-rest-api.git
