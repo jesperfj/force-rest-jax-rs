@@ -1,43 +1,42 @@
-## JAX-RS with Grizzly
+# Sample JAX-RS Force.com App
 
-JAX-RS is a great way to build RESTful services in Java. This is a very quick and simple example of a REST service that lets you upload a file and later download it.
+This app is a sample of a JAX-RS Jersey/Grizzly app with Force.com OAuth authentication.
+
+## Unpublished Dependencies
+
+It currently has a dependency on the unpublished [Force.com REST API module](https://github.com/jesperfj/force-rest-api). So you need to build this locally first. It's added as a submodule, so all you have to do is clone this repo with --recursive:
+
+    $ git clone --recursive [this-repo-url]
+
+Then build the force-rest-api submodule manually:
+
+    $ mvn -f force-rest-api/pom.xml -DskipTests install
+
+(execute from the dir cloned from this repo)
 
 ## Build and Run
 
-Build the code with:
+Once you have force-rest-api built in your local maven cache you can build this project:
 
     $ mvn package
 
-The POM file uses the [appassembler plugin](http://mojo.codehaus.org/appassembler/appassembler-maven-plugin/) to generate a wrapper script, so it's very simple to run the app. Simply execute:
+## Configure OAuth
 
-    $ sh target/bin/app
-    Starting grizzly...
-    Oct 25, 2011 10:06:44 AM com.sun.grizzly.Controller logVersion
-    INFO: Starting Grizzly Framework 1.9.18-i - Tue Oct 25 10:06:44 PDT 2011
-    Jersey started with WADL available at http://localhost:9998/application.wadl.
+The sample will read OAuth credentials from the environment variables `CLIENT_ID` and `CLIENT_SECRET`. To obtain these values, create an OAuth Remote Access entry (an OAuth consumer) in your Force.com developer org and set `CLIENT_ID` to the consumer key value and `CLIENT_SECRET` to the consumer secret value.
 
-(On Windows use target/bin/app.bat instead)
+If you are using the foreman tool to run your app locally, then you can store these values in a `.env` file. See the `env.sample` file for an example.
 
-## Upload a file
+## Run the app
 
-    $ curl http://localhost:9998/blob -F "file=@myfile.ext;filename=myfile.ext"
+The Maven build script generates an execution wrapper in `target/bin/webapp`. If you have set your environment variables correctly you can now start it with:
 
-will upload the file `myfile.ext` from current directory.
+    $ sh target/bin/webapp
 
-## Download the file
+If you're using foreman, you can start it with
 
-    $ curl -O http://localhost:9998/blob/myfile.ext
-
-will save the file you just uploaded in the current directory
+    $ foreman start
 
 ## Deploying to Heroku
 
-Assuming you're already set up with Heroku, all you need to do to is:
-
-1. heroku create --stack cedar
-2. git push heroku master
-
-It's that simple. 
-
-Note that files uploaded to Heroku using this app will get stored on the ephemeral disk space of the dyno receiving the file. These files are lost each time dynos are restarted, so you have a bit more homework to do before you have your own personal dropbox service.
+TODO. It may work, but detecting redirect URI automatically is still unresolved
 
